@@ -6,8 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.noteapp.dao.NoteDAO
 import com.example.noteapp.data.Note
 import com.example.noteapp.enums.SortType
+import com.example.noteapp.repository.NoteRepository
 import com.example.noteapp.state.NoteEvent
 import com.example.noteapp.state.NoteState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,14 +18,16 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class NoteViewModel(private val dao: NoteDAO) : ViewModel() {
+@HiltViewModel
+class NoteViewModel @Inject constructor(private val repository: NoteRepository) : ViewModel() {
     private val _sortType = MutableStateFlow(SortType.CREATED_TIME)
     private val _notes = _sortType.flatMapLatest { sortType ->
         when (sortType) {
-            SortType.CREATED_TIME -> dao.getNoteByCreatedTime()
-            SortType.LAST_MODIFIED_TIME -> dao.getNoteByLastModifiedTime()
+            SortType.CREATED_TIME -> repository.getNoteByCreatedTime()
+            SortType.LAST_MODIFIED_TIME -> repository.getNoteByLastModifiedTime()
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
@@ -38,7 +42,7 @@ class NoteViewModel(private val dao: NoteDAO) : ViewModel() {
     fun onEvent(event: NoteEvent) {
         when (event) {
             is NoteEvent.DeleteNote -> viewModelScope.launch {
-                dao.deleteNote(event.note)
+                repository.deleteNote(event.note)
             }
 
             NoteEvent.SaveNote -> {
@@ -49,7 +53,7 @@ class NoteViewModel(private val dao: NoteDAO) : ViewModel() {
                     lastModifiedTime = System.currentTimeMillis()
                 )
                 viewModelScope.launch {
-                    dao.insertNote(note)
+                    repository.insertNote(note)
                 }
             }
 
