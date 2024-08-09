@@ -10,7 +10,7 @@ import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.unit.sp
 import com.example.noteapp.R
 
-val fontName = GoogleFont("Lato")
+val fontName = GoogleFont("Nunito")
 
 val provider = GoogleFont.Provider(
     providerAuthority = "com.google.android.gms.fonts",
@@ -24,7 +24,7 @@ val fontFamily = FontFamily(
 val HeadingStyle = TextStyle(
     fontSize = 40.sp,
     fontWeight = FontWeight(500),
-    letterSpacing = 0.5.sp,
+    letterSpacing = 1.sp,
     fontFamily = fontFamily,
     color = Color.White
 )

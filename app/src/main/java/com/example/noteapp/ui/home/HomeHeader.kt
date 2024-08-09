@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.noteapp.R
 import com.example.noteapp.ui.theme.HeadingStyle
+import com.example.noteapp.ui.theme.Secondary
 import com.example.noteapp.ui.utils.StatusBarUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,7 +49,10 @@ fun HomeHeader(
             )
             Spacer(modifier = Modifier.weight(1f))
             Card(
-                modifier = Modifier.wrapContentSize(), shape = RoundedCornerShape(15.dp)
+                modifier = Modifier.wrapContentSize(),
+                shape = RoundedCornerShape(15.dp),
+                colors = CardDefaults.cardColors(containerColor = Secondary),
+                elevation = CardDefaults.cardElevation(defaultElevation = 15.dp)
             ) {
                 Image(
                     painterResource(id = R.drawable.search),
@@ -57,7 +62,10 @@ fun HomeHeader(
             }
             Spacer(modifier = Modifier.width(21.dp))
             Card(
-                modifier = Modifier.wrapContentSize(), shape = RoundedCornerShape(15.dp)
+                modifier = Modifier.wrapContentSize(), shape = RoundedCornerShape(15.dp),
+                colors = CardDefaults.cardColors(containerColor = Secondary),
+                elevation = CardDefaults.cardElevation(defaultElevation = 15.dp)
+
             ) {
                 Image(
                     painterResource(id = R.drawable.info_outline),
