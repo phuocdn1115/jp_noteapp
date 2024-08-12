@@ -1,12 +1,13 @@
 package com.example.noteapp.viewmodel
 
+import android.util.Log
 import androidx.core.content.contentValuesOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.noteapp.dao.NoteDAO
 import com.example.noteapp.data.Note
 import com.example.noteapp.enums.SortType
-import com.example.noteapp.repository.NoteRepository
+import com.example.noteapp.repository.NewNoteRepository
 import com.example.noteapp.state.NoteEvent
 import com.example.noteapp.state.NoteState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +23,7 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
-class NoteViewModel @Inject constructor(private val repository: NoteRepository) : ViewModel() {
+class NoteViewModel @Inject constructor(private val repository: NewNoteRepository) : ViewModel() {
     private val _sortType = MutableStateFlow(SortType.CREATED_TIME)
     private val _notes = _sortType.flatMapLatest { sortType ->
         when (sortType) {
@@ -33,6 +34,7 @@ class NoteViewModel @Inject constructor(private val repository: NoteRepository) 
 
     private val _state = MutableStateFlow(NoteState())
     val state = combine(_state, _sortType, _notes) { state, sortType, notes ->
+        Log.i("STATE_CHANGE", "CHECK_LOG: ")
         state.copy(
             notes = notes,
             sortType = sortType
@@ -58,7 +60,7 @@ class NoteViewModel @Inject constructor(private val repository: NoteRepository) 
             }
 
             is NoteEvent.SortNote -> {
-                _sortType.value = event.sortType
+                _sortType.value = event.sortType ?: SortType.CREATED_TIME
             }
 
             is NoteEvent.Content -> _state.update {

@@ -5,58 +5,67 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.material3.FloatingActionButtonElevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.noteapp.state.NoteEvent
 import com.example.noteapp.state.NoteState
 import com.example.noteapp.ui.home.HomeHeader
-import com.example.noteapp.ui.home.MyFloatingActionButton
 import com.example.noteapp.ui.theme.BgColor
 import com.example.noteapp.ui.theme.NoteAppTheme
+import com.example.noteapp.ui.theme.Pink80
 import com.example.noteapp.ui.theme.Secondary
-import com.example.noteapp.ui.utils.StatusBarUtils
+import com.example.noteapp.viewmodel.NoteViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val viewModel: NoteViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             NoteAppTheme {
-
+                val state by viewModel.state.collectAsState()
+                Greeting(state, viewModel::onEvent)
             }
         }
     }
 }
 
 @Composable
-fun Greeting() {
+fun Greeting(state: NoteState, onEvent: (NoteEvent) -> Unit) {
     val currentContext = LocalContext.current
+    onEvent.invoke(NoteEvent.SortNote())
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -64,13 +73,33 @@ fun Greeting() {
             .background(BgColor)
     ) {
         HomeHeader(modifier = Modifier.padding(horizontal = 25.dp, vertical = 15.dp))
-        Image(
-            painter = painterResource(id = R.drawable.rafiki),
-            contentDescription = "Image no note",
-            modifier = Modifier.fillMaxWidth()
-                .align(Alignment.Center)
-        )
-
+        if (state.notes.isEmpty()) {
+            Image(
+                painter = painterResource(id = R.drawable.rafiki),
+                contentDescription = "Image no note",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.Center)
+            )
+        } else {
+            LazyColumn(
+                contentPadding = PaddingValues(25.dp),
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(state.notes) { note ->
+                    Card(modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(15.dp),
+                        colors = CardDefaults.cardColors(containerColor = Pink80),
+                        onClick = { /*TODO*/ }) {
+                        Column {
+                            Text(text = note.title)
+                            Text(text = note.content)
+                        }
+                    }
+                }
+            }
+        }
         LargeFloatingActionButton(
             onClick = {
                 Toast.makeText(currentContext, "Create new email", Toast.LENGTH_LONG).show()
@@ -88,10 +117,10 @@ fun Greeting() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    NoteAppTheme {
-        Greeting()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun GreetingPreview() {
+//    NoteAppTheme {
+//        Greeting()
+//    }
+//}
