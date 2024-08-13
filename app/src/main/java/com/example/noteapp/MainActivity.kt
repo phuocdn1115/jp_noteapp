@@ -1,6 +1,7 @@
 package com.example.noteapp
 
 import android.os.Bundle
+import android.provider.ContactsContract.CommonDataKinds.Note
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -37,15 +38,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.noteapp.state.NoteEvent
 import com.example.noteapp.state.NoteState
 import com.example.noteapp.ui.home.HomeHeader
+import com.example.noteapp.ui.note.NoteContent
 import com.example.noteapp.ui.theme.BgColor
 import com.example.noteapp.ui.theme.NoteAppTheme
 import com.example.noteapp.ui.theme.Pink80
 import com.example.noteapp.ui.theme.Secondary
 import com.example.noteapp.viewmodel.NoteViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.serialization.Serializable
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -56,15 +62,32 @@ class MainActivity : ComponentActivity() {
         setContent {
             NoteAppTheme {
                 val state by viewModel.state.collectAsState()
-                Greeting(state, viewModel::onEvent)
+                val navController = rememberNavController()
+                NavHost(navController = navController, startDestination = "home_screen") {
+                    composable(route = "home_screen") {
+                        Greeting(state = state, onEvent = viewModel::onEvent) {
+                            navController.navigate("note_screen")
+                        }
+                    }
+                    composable(route = "note_screen"){
+                        NoteContent(state = state, onEvent = viewModel::onEvent, onBackPress = {
+                            navController.popBackStack("home_screen", true)
+                        })
+                    }
+                }
             }
         }
     }
 }
 
+@Serializable
+object HomeScreen
+
+@Serializable
+object NoteScreen
+
 @Composable
-fun Greeting(state: NoteState, onEvent: (NoteEvent) -> Unit) {
-    val currentContext = LocalContext.current
+fun Greeting(state: NoteState, onEvent: (NoteEvent) -> Unit, onNewNote: () -> Unit) {
     onEvent.invoke(NoteEvent.SortNote())
     Box(
         modifier = Modifier
@@ -102,7 +125,7 @@ fun Greeting(state: NoteState, onEvent: (NoteEvent) -> Unit) {
         }
         LargeFloatingActionButton(
             onClick = {
-                Toast.makeText(currentContext, "Create new email", Toast.LENGTH_LONG).show()
+                onNewNote.invoke()
             },
             shape = CircleShape,
             modifier = Modifier

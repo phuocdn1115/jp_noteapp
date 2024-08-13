@@ -28,6 +28,41 @@ val HeadingStyle = TextStyle(
     fontFamily = fontFamily,
     color = Color.White
 )
+
+val TxtTitlePlaceholderStyle = TextStyle(
+    fontSize = 48.sp,
+    fontWeight = FontWeight(500),
+    letterSpacing = 1.sp,
+    fontFamily = fontFamily,
+    color = TxtPlaceholderColor
+)
+
+val TxtTitleStyle = TextStyle(
+    fontSize = 48.sp,
+    fontWeight = FontWeight(500),
+    letterSpacing = 1.sp,
+    fontFamily = fontFamily,
+    color = Color.White
+)
+
+
+val TxtContentPlaceholderStyle = TextStyle(
+    fontSize = 23.sp,
+    fontWeight = FontWeight(400),
+    letterSpacing = 1.sp,
+    fontFamily = fontFamily,
+    color = TxtPlaceholderColor
+)
+
+val TxtContentStyle = TextStyle(
+    fontSize = 23.sp,
+    fontWeight = FontWeight(400),
+    letterSpacing = 1.sp,
+    fontFamily = fontFamily,
+    color = Color.White
+)
+
+
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(

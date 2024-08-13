@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.org.jetbrains.kotlin.kapt)
     alias(libs.plugins.dagger.hilt)
+    alias(libs.plugins.kotlin.serialization)
 //    alias(libs.plugins.androidx.room)
 }
 
@@ -80,4 +81,7 @@ dependencies {
     implementation(libs.room.ktx)
     kapt(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
+
+    implementation(libs.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
 }

@@ -54,6 +54,7 @@ class NoteViewModel @Inject constructor(private val repository: NewNoteRepositor
                     createdTime = System.currentTimeMillis(),
                     lastModifiedTime = System.currentTimeMillis()
                 )
+                Log.i("ON_SAVE", note.toString())
                 viewModelScope.launch {
                     repository.insertNote(note)
                 }
@@ -64,12 +65,14 @@ class NoteViewModel @Inject constructor(private val repository: NewNoteRepositor
             }
 
             is NoteEvent.Content -> _state.update {
+                Log.i("EVENT_STRING", it.toString())
                 it.copy(
                     content = event.content
                 )
             }
 
             is NoteEvent.Title -> _state.update {
+                Log.i("EVENT_STRING", it.toString())
                 it.copy(
                     title = event.title
                 )
